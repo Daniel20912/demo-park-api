@@ -22,4 +22,17 @@ public class UsuarioService {
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
+
+
+    /*
+    Quando é feita a busca de um objeto usando buscarPorId(id), o método findById do JPA retorna uma entidade gerenciada pelo Hibernate.
+    Isso significa que a instância retornada está associada ao Contexto de Persistência.
+    Qualquer modificação feita nessa entidade gerenciada será automaticamente detectada e sincronizada com o banco de dados durante o commit da transação.
+     */
+    @Transactional
+    public Usuario editarSenha(Long id, String password) {
+        Usuario user = buscarPorId(id);
+        user.setPassword(password);
+        return user;
+    }
 }
