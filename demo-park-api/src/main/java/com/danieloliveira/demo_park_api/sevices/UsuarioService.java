@@ -1,6 +1,8 @@
 package com.danieloliveira.demo_park_api.sevices;
 
+import com.danieloliveira.demo_park_api.entities.Usuario;
 import com.danieloliveira.demo_park_api.repositories.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,4 +12,9 @@ import org.springframework.stereotype.Service;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+
+    @Transactional // indica que é o Spring que deve tomar conta dos recursos de abrir, gerenciar e fechar as transações
+    public Usuario salvar(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
 }
