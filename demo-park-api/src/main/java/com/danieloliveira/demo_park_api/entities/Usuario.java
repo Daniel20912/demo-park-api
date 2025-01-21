@@ -1,7 +1,9 @@
 package com.danieloliveira.demo_park_api.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,12 +16,12 @@ import java.util.Objects;
 @NoArgsConstructor
 // notações do jpa
 @Entity
-@Table(name="usuarios")
+@Table(name = "usuarios")
 public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true, length = 100)
@@ -45,11 +47,6 @@ public class Usuario implements Serializable {
     @Column(name = "modificado_por")
     private String modificadoPor;
 
-    public enum Role {
-        ROLE_ADMIN,
-        ROLE_CLIENTE
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -64,8 +61,10 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                '}';
+        return "Usuario{" + "id=" + id + '}';
+    }
+
+    public enum Role {
+        ROLE_ADMIN, ROLE_CLIENTE
     }
 }
