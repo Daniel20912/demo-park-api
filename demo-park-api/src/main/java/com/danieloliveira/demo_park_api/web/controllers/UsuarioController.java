@@ -6,6 +6,7 @@ import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioCreateDTO;
 import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioSenhaDTO;
 import com.danieloliveira.demo_park_api.web.controllers.dto.mapper.UsuarioMapper;
 import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,8 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> create(@RequestBody UsuarioCreateDTO createDTO) {
+    // a annotaition @Valid indica que o objeto passado deve ser validado
+    public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioCreateDTO createDTO) {
         Usuario user = usuarioService.salvar(UsuarioMapper.toUsuario(createDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDto(user));
     }
