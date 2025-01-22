@@ -2,6 +2,7 @@ package com.danieloliveira.demo_park_api.sevices;
 
 import com.danieloliveira.demo_park_api.entities.Usuario;
 import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
+import com.danieloliveira.demo_park_api.exceptions.PasswordInvalidException;
 import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationException;
 import com.danieloliveira.demo_park_api.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,11 @@ public class UsuarioService {
     @Transactional
     public Usuario editarSenha(Long id, String senhaAtual, String novaSenha, String confirmaSenha) {
         if (!novaSenha.equals(confirmaSenha))
-            throw new RuntimeException("Nova senha não confere com a confirmação de senha.");
+            throw new PasswordInvalidException("Nova senha não confere com a confirmação de senha.");
 
 
         Usuario user = buscarPorId(id);
-        if (!user.getPassword().equals(senhaAtual)) throw new RuntimeException("Sua senha não confere");
+        if (!user.getPassword().equals(senhaAtual)) throw new PasswordInvalidException("Sua senha não confere");
 
         user.setPassword(novaSenha);
         return user;
