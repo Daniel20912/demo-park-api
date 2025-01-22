@@ -26,9 +26,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long id) {
         Usuario user = usuarioService.buscarPorId(id);
-        return ResponseEntity.ok().body(user);
+        return ResponseEntity.ok().body(UsuarioMapper.toDto(user));
     }
 
     // put é uma atualização completa do objeto, patch um parcial
