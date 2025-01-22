@@ -1,8 +1,8 @@
-package com.danieloliveira.demo_park_api.web.controllers.dto.mapper;
+package com.danieloliveira.demo_park_api.web.dto.mapper;
 
 import com.danieloliveira.demo_park_api.entities.Usuario;
-import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioCreateDTO;
-import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioCreateDTO;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 

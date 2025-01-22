@@ -2,10 +2,10 @@ package com.danieloliveira.demo_park_api.web.controllers;
 
 import com.danieloliveira.demo_park_api.entities.Usuario;
 import com.danieloliveira.demo_park_api.sevices.UsuarioService;
-import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioCreateDTO;
-import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioSenhaDTO;
-import com.danieloliveira.demo_park_api.web.controllers.dto.mapper.UsuarioMapper;
-import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioCreateDTO;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioSenhaDTO;
+import com.danieloliveira.demo_park_api.web.dto.mapper.UsuarioMapper;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.danieloliveira.demo_park_api.web.controllers.dto;
+package com.danieloliveira.demo_park_api.web.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
