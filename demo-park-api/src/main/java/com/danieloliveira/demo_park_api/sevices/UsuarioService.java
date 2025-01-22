@@ -1,6 +1,7 @@
 package com.danieloliveira.demo_park_api.sevices;
 
 import com.danieloliveira.demo_park_api.entities.Usuario;
+import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
 import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationException;
 import com.danieloliveira.demo_park_api.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Usuário id=%s não encontrado", id)));
     }
 
 

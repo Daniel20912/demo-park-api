@@ -1,5 +1,6 @@
 package com.danieloliveira.demo_park_api.web.exceptions;
 
+import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
 import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,13 @@ public class ApiExceptionHandler {
 
         log.error("Api Error - : ", e);
         return ResponseEntity.status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException e, HttpServletRequest request) {
+
+        log.error("Api Error - : ", e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
 
