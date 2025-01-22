@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 // serve para o lombok criar um metodo contrutor com a variável UsuárioRepository como parte do metodo construtor, fazendo injeção de dependecia
 @RequiredArgsConstructor
 @Service
@@ -34,5 +36,10 @@ public class UsuarioService {
         Usuario user = buscarPorId(id);
         user.setPassword(password);
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> buscarTodos() {
+        return usuarioRepository.findAll();
     }
 }
