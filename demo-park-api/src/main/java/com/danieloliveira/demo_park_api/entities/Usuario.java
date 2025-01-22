@@ -32,7 +32,7 @@ public class Usuario implements Serializable {
 
     @Enumerated(EnumType.STRING) // transforma o nome da constante em uma string para salvar no bando de dados
     @Column(name = "role", nullable = false, length = 25)
-    private Role role;
+    private Role role = Role.ROLE_CLIENTE; // os usuários por padrão serão clientes, caso não seja especificado
 
     // sistema de auditoria
     @Column(name = "data_criacao")
