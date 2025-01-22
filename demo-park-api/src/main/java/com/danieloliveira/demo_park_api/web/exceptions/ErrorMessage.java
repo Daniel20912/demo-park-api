@@ -34,7 +34,9 @@ public class ErrorMessage {
         this.message = mensagem;
     }
 
-    // com o BindingResult temos acesso aos erros quando eles são gerados com uma validação de campos
+    // Com o BindingResult temos acesso aos erros quando eles são gerados com uma validação de campos
+    // um tipo de erro que o bindingResult tem é o FieldError: representa um erro específico de um campo (ex.: nome, e-mail), é criado quando uma validação de campo falha
+    // outro erro é o ObjectError: representa um erro global no objeto, não vinculado a um campo específico. Pode ser usado para validações que envolvem múltiplos campos ou o estado geral do objeto
     public ErrorMessage(HttpServletRequest request, HttpStatus status, String mensagem, BindingResult result) {
         this.path = request.getRequestURI();
         this.method = request.getMethod();
