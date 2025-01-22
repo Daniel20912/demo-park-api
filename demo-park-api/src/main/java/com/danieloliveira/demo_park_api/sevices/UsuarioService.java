@@ -2,8 +2,8 @@ package com.danieloliveira.demo_park_api.sevices;
 
 import com.danieloliveira.demo_park_api.entities.Usuario;
 import com.danieloliveira.demo_park_api.repositories.UsuarioRepository;
-import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,9 +32,15 @@ public class UsuarioService {
     Qualquer modificação feita nessa entidade gerenciada será automaticamente detectada e sincronizada com o banco de dados durante o commit da transação.
      */
     @Transactional
-    public Usuario editarSenha(Long id, String password) {
+    public Usuario editarSenha(Long id, String senhaAtual, String novaSenha, String confirmaSenha) {
+        if (!novaSenha.equals(confirmaSenha))
+            throw new RuntimeException("Nova senha não confere com a confirmação de senha.");
+
+
         Usuario user = buscarPorId(id);
-        user.setPassword(password);
+        if (!user.getPassword().equals(senhaAtual)) throw new RuntimeException("Sua senha não confere");
+
+        user.setPassword(novaSenha);
         return user;
     }
 

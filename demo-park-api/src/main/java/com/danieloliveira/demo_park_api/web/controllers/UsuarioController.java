@@ -3,8 +3,9 @@ package com.danieloliveira.demo_park_api.web.controllers;
 import com.danieloliveira.demo_park_api.entities.Usuario;
 import com.danieloliveira.demo_park_api.sevices.UsuarioService;
 import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioCreateDTO;
+import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioSenhaDTO;
 import com.danieloliveira.demo_park_api.web.controllers.dto.mapper.UsuarioMapper;
-import com.danieloliveira.demo_park_api.web.controllers.dto.mapper.UsuarioResponseDTO;
+import com.danieloliveira.demo_park_api.web.controllers.dto.UsuarioResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +34,14 @@ public class UsuarioController {
 
     // put é uma atualização completa do objeto, patch um parcial
     @PatchMapping("/{id}")
-    public ResponseEntity<Usuario> updatePassword(@PathVariable Long id, @RequestBody Usuario usuario) {
-        Usuario user = usuarioService.editarSenha(id, usuario.getPassword());
-        return ResponseEntity.ok().body(user);
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody UsuarioSenhaDTO dto) {
+        Usuario user = usuarioService.editarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha(), dto.getConfirmaSenha());
+        return ResponseEntity.noContent().build(); // retorna uma mensagem de sucesso sem corpo de resposta
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAll() {
+    public ResponseEntity<List<UsuarioResponseDTO>> getAll() {
         List<Usuario> users = usuarioService.buscarTodos();
-        return ResponseEntity.ok().body(users);
+        return ResponseEntity.ok().body(UsuarioMapper.toListDto(users));
     }
 }
