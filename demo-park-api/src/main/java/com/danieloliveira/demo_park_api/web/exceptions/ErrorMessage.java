@@ -1,5 +1,6 @@
 package com.danieloliveira.demo_park_api.web.exceptions;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,6 +22,14 @@ public class ErrorMessage {
     private int status; // código do http status
     private String statusText; // mensagem do status
     private String message; // mensagem de erro
+
+    /*
+    quando o objeto ErroMessage for gerado e for transformado em JSON para ser incluido na resposta de requisição,
+    a jackson (que é a biblioteca que faz essa requisição) vai ver o campo errors como nulo e não vai incluir nada nele,
+    pois ela só inclui se o campo não for nulo
+     */
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, String> errors;
 
     public ErrorMessage() {
