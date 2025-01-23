@@ -51,8 +51,8 @@ public class UsuarioIT {
         // variação 1
         ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UsuarioCreateDTO("", "123456")) // como o role não foi especificado será um cliente
-                .exchange().expectStatus().isEqualTo(422)// se chegar qualquer código que não seja um 201 será lançada uma exceção
+                .bodyValue(new UsuarioCreateDTO("", "123456"))
+                .exchange().expectStatus().isEqualTo(422)
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
 
@@ -98,8 +98,8 @@ public class UsuarioIT {
         // variação 1
         ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UsuarioCreateDTO("alex@gmail.com", "")) // como o role não foi especificado será um cliente
-                .exchange().expectStatus().isEqualTo(422)// se chegar qualquer código que não seja um 201 será lançada uma exceção
+                .bodyValue(new UsuarioCreateDTO("alex@gmail.com", ""))
+                .exchange().expectStatus().isEqualTo(422)
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
 
@@ -137,20 +137,51 @@ public class UsuarioIT {
     }
 
 
-
     @Test
+    // teste com username repetido
     public void createUsuario_ComUsernameRepetido_RetornarErrorMessage409() {
         // teste do erro ao inserir um usuário com um username que já exista no banco de dados
         ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UsuarioCreateDTO("ana@gmail.com", "123456")) // como o role não foi especificado será um cliente
-                .exchange().expectStatus().isEqualTo(409)// se chegar qualquer código que não seja um 201 será lançada uma exceção
+                .bodyValue(new UsuarioCreateDTO("ana@gmail.com", "123456"))
+                .exchange().expectStatus().isEqualTo(409)
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
 
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+
+    }
+
+    @Test
+    // teste busca de um usuário pelo id
+    public void buscarUsuario_ComIdExistente_RetornarUsuarioComStatus200() {
+        UsuarioResponseDTO responseBody = testClient.get().uri("/api/v1/usuarios/100")
+                .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
+                .expectBody(UsuarioResponseDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getId()).isEqualTo(100);
+        Assertions.assertThat(responseBody.getUsername()).isEqualTo("ana@gmail.com");
+        Assertions.assertThat(responseBody.getRole()).isEqualTo("ADMIN"); // como o response é um DTO ele só mostra o role como CLIENTE, não como ROLE_CLIENTE
+
+    }
+
+
+    @Test
+    // teste busca de um usuário pelo id que não existe
+    public void buscarUsuario_ComIdInexistente_RetornarUsuarioComStatus404() {
+        ErrorMessage responseBody = testClient.get().uri("/api/v1/usuarios/1234")
+                .exchange().expectStatus().isNotFound()// se chegar qualquer código que não seja um 200 será lançada uma exceção
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
 
     }
 }
