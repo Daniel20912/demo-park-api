@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
+
 // essa annotation indica que a classe será de testes
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // isso faz com que o tomcat seja executado em uma porta de maneira randomica
 
@@ -301,6 +303,23 @@ public class UsuarioIT {
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+
+    }
+
+
+    @Test
+    // teste listar todos os usuários
+    public void listarUsuarios_SemQualquerParametro_RetornarListaDeUsuariosCriadosRetornarStatus200() {
+        List<UsuarioResponseDTO> responseBody = testClient.get()
+                .uri("/api/v1/usuarios")
+                .exchange().expectStatus().isOk()
+                .expectBodyList(UsuarioResponseDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.size()).isEqualTo(3);
 
 
     }

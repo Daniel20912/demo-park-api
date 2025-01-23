@@ -68,7 +68,6 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Lista todos os recursos", description = "Buscar todos os usuários cadastrados", responses = {
-            // como o código 204 é um noContente, o schema será um Void
             @ApiResponse(responseCode = "200", description = "Todos os recursos listados com sucesso", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),})
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> getAll() {
