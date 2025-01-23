@@ -2,6 +2,7 @@ package com.danieloliveira.demo_park_api;
 
 import com.danieloliveira.demo_park_api.web.dto.UsuarioCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.UsuarioResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.UsuarioSenhaDTO;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,8 @@ public class UsuarioIT {
     // métodos de teste devem ser sempre públicos e void
     // testa se a criação ocorreu corretamente
     public void createUsuario_ComUsernameEPasswordValidos_RetornarUsuarioCriadoComStatus201() {
-        UsuarioResponseDTO responseBody = testClient.post().uri("/api/v1/usuarios")
+        UsuarioResponseDTO responseBody = testClient.post()
+                .uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioCreateDTO("bola@gmail.com", "123456")) // como o role não foi especificado será um cliente
                 .exchange().expectStatus().isCreated()// se chegar qualquer código que não seja um 201 será lançada uma exceção
@@ -49,7 +51,8 @@ public class UsuarioIT {
     // testa os erros de username
     public void createUsuario_ComUsernameInvalido_RetornarErrorMessageStatus422() {
         // variação 1
-        ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
+        ErrorMessage responseBody = testClient.post()
+                .uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioCreateDTO("", "123456"))
                 .exchange().expectStatus().isEqualTo(422)
@@ -96,7 +99,8 @@ public class UsuarioIT {
     public void createUsuario_ComPasswordInvalido_RetornarErrorMessageStatus422() {
 
         // variação 1
-        ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
+        ErrorMessage responseBody = testClient.post()
+                .uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioCreateDTO("alex@gmail.com", ""))
                 .exchange().expectStatus().isEqualTo(422)
@@ -141,7 +145,8 @@ public class UsuarioIT {
     // teste com username repetido
     public void createUsuario_ComUsernameRepetido_RetornarErrorMessage409() {
         // teste do erro ao inserir um usuário com um username que já exista no banco de dados
-        ErrorMessage responseBody = testClient.post().uri("/api/v1/usuarios")
+        ErrorMessage responseBody = testClient.post()
+                .uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioCreateDTO("ana@gmail.com", "123456"))
                 .exchange().expectStatus().isEqualTo(409)
@@ -154,10 +159,12 @@ public class UsuarioIT {
 
     }
 
+
     @Test
     // teste busca de um usuário pelo id
     public void buscarUsuario_ComIdExistente_RetornarUsuarioComStatus200() {
-        UsuarioResponseDTO responseBody = testClient.get().uri("/api/v1/usuarios/100")
+        UsuarioResponseDTO responseBody = testClient.get()
+                .uri("/api/v1/usuarios/100")
                 .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
                 .expectBody(UsuarioResponseDTO.class)
                 .returnResult().getResponseBody();
@@ -174,14 +181,127 @@ public class UsuarioIT {
     @Test
     // teste busca de um usuário pelo id que não existe
     public void buscarUsuario_ComIdInexistente_RetornarUsuarioComStatus404() {
-        ErrorMessage responseBody = testClient.get().uri("/api/v1/usuarios/1234")
-                .exchange().expectStatus().isNotFound()// se chegar qualquer código que não seja um 200 será lançada uma exceção
+        ErrorMessage responseBody = testClient.get()
+                .uri("/api/v1/usuarios/1234")
+                .exchange().expectStatus().isNotFound()
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
 
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+
+    }
+
+    @Test
+    // teste da alteração de senha
+    public void editarSenha_ComDadosValidos_RetornarStatus204() {
+        testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
+                .exchange().expectStatus().isNoContent();
+
+    }
+
+
+    @Test
+    // teste busca de um usuário pelo id que não existe
+    public void editarSenha_ComIdInexistente_RetornarUsuarioComStatus404() {
+        ErrorMessage responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/1234")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
+                .exchange().expectStatus().isNotFound()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+
+    }
+
+
+    @Test
+    // teste edição da senha com campos inválidos
+    public void editarSenha_ComCamposInvaliodos_RetornarErrorMessage422() {
+
+        // variação 1
+        ErrorMessage responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("", "", ""))
+                .exchange().expectStatus().isEqualTo(422)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+
+
+        // variação 2
+        responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("12345", "12345", "12345"))
+                .exchange().expectStatus().isEqualTo(422)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+
+
+
+        // variação 3
+        responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("1234567", "1234567", "1234567"))
+                .exchange().expectStatus().isEqualTo(422)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+    }
+
+
+    @Test
+    // teste edição da senha quando as senhas não conferem
+    public void editarSenha_ComSenhasInvalidas_RetornarErrorMessage400() {
+
+        // variação 1
+        ErrorMessage responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("123456", "123456", "000000"))
+                .exchange().expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+
+        // variação 2
+        responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("000000", "123456", "123456"))
+                .exchange().expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
 
     }
 }
