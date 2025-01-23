@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 // a annotation @Tag permite que se defina um nome e uma descrição par um conjunto de endpoints, que irá aparecer na documentação
@@ -37,8 +36,7 @@ public class UsuarioController {
     @Operation(summary = "Criar um novo usuário", description = "Recurso para criar um novo usuário", responses = {
             @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDTO.class))),
             @ApiResponse(responseCode = "409", description = "Usuário email já cadastrado no sistema", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "422", description = "Recurso não processado por dados de entrada inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-    })
+            @ApiResponse(responseCode = "422", description = "Recurso não processado por dados de entrada inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))})
     @PostMapping
     // a annotaition @Valid indica que o objeto passado deve ser validado
     public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioCreateDTO createDTO) {
@@ -48,8 +46,7 @@ public class UsuarioController {
 
     @Operation(summary = "Recuperar um usuário pelo Id", description = "Recuperar um usuário pelo Id", responses = {
             @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Recurso não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-    })
+            @ApiResponse(responseCode = "404", description = "Recurso não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))})
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long id) {
         Usuario user = usuarioService.buscarPorId(id);
@@ -60,8 +57,7 @@ public class UsuarioController {
             // como o código 204 é um noContente, o schema será um Void
             @ApiResponse(responseCode = "204", description = "Senha atualizada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "404", description = "Recurso não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "400", description = "Senha não confere", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-    })
+            @ApiResponse(responseCode = "400", description = "Senha não confere", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))})
     // put é uma atualização completa do objeto, patch um parcial
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id, @Valid @RequestBody UsuarioSenhaDTO dto) {
@@ -71,8 +67,7 @@ public class UsuarioController {
 
     @Operation(summary = "Lista todos os recursos", description = "Buscar todos os usuários cadastrados", responses = {
             // como o código 204 é um noContente, o schema será um Void
-            @ApiResponse(responseCode = "200", description = "Todos os recursos listados com sucesso", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),
-    })
+            @ApiResponse(responseCode = "200", description = "Todos os recursos listados com sucesso", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),})
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> getAll() {
         List<Usuario> users = usuarioService.buscarTodos();
