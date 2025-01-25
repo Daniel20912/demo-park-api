@@ -22,6 +22,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 public class SpringSecurityConfig {
 
+    private static final String[] DOCUMENTATION_OPENAPI = {
+            "/docs/index.html",
+            "/docs-park.html", "/docs-park/**",
+            "/v3/api-docs/**",
+            "/swagger-ui-custom.html", "/swagger-ui.html", "/swagger-ui/**",
+            "/**.html", "/webjars/**", "/configuration/**", "/swagger-resources/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -30,6 +38,7 @@ public class SpringSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic é um tipo de autenticação que é possivel de ser feita por meio de login e senha, porém não tem segurança nenhuma
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "api/v1/usuarios").permitAll()  // indica que o metodo de criar um usuário, é o único que não vai precisar de uma autenticação
                         .requestMatchers(HttpMethod.POST, "api/v1/auth").permitAll() // permite que todos os usuários possam tentar autenticar
+                        .requestMatchers(DOCUMENTATION_OPENAPI).permitAll() // faz com que o spring security libere o acesso à documentação
                         .anyRequest().authenticated() // indica que, tirando o permitAll, todas as outras operações vão precisar de autenticação
                 ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // diz que a política de sessão é Stateless
                 .addFilterBefore(
