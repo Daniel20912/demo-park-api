@@ -65,6 +65,8 @@ public class UsuarioController {
     })
     // put é uma atualização completa do objeto, patch um parcial
     @PatchMapping("/{id}")
+    // tanto o ADMIN quanto o CLIENTE, só podem alterar suas próprias senhas, se estiverem logados
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id, @Valid @RequestBody UsuarioSenhaDTO dto) {
         Usuario user = usuarioService.editarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha(), dto.getConfirmaSenha());
         return ResponseEntity.noContent().build(); // retorna uma mensagem de sucesso sem corpo de resposta
