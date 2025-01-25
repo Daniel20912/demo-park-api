@@ -49,7 +49,8 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Recurso não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))})
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // não precisa passar o "ROLE_"
+    // faz com que o ADMIN possa acessar informações sobre qualquer outro usuário e o CLIENTE só possa acessar os dele mesmo
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)") // não precisa passar o "ROLE_"
     public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long id) {
         Usuario user = usuarioService.buscarPorId(id);
         return ResponseEntity.ok().body(UsuarioMapper.toDto(user));
