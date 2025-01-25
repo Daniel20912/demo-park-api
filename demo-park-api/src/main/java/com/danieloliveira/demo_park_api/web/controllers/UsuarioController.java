@@ -75,6 +75,7 @@ public class UsuarioController {
     @Operation(summary = "Lista todos os recursos", description = "Buscar todos os usuários cadastrados", responses = {
             @ApiResponse(responseCode = "200", description = "Todos os recursos listados com sucesso", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),})
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponseDTO>> getAll() {
         List<Usuario> users = usuarioService.buscarTodos();
         return ResponseEntity.ok().body(UsuarioMapper.toListDto(users));
