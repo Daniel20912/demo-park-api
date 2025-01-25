@@ -7,6 +7,7 @@ import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationExcept
 import com.danieloliveira.demo_park_api.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +19,12 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional // indica que é o Spring que deve tomar conta dos recursos de abrir, gerenciar e fechar as transações
     public Usuario salvar(Usuario usuario) {
         try {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword())); // criptografa a senha
             return usuarioRepository.save(usuario);
         } catch (DataIntegrityViolationException e) {
             throw new UsernameUniqueViolationException(String.format("Username '%s' já cadastrado", usuario.getUsername()));
@@ -46,14 +49,23 @@ public class UsuarioService {
 
 
         Usuario user = buscarPorId(id);
-        if (!user.getPassword().equals(senhaAtual)) throw new PasswordInvalidException("Sua senha não confere");
+        if (!passwordEncoder.matches(senhaAtual, user.getPassword())) throw new PasswordInvalidException("Sua senha não confere");
 
-        user.setPassword(novaSenha);
+        user.setPassword(passwordEncoder.encode(senhaAtual));
         return user;
     }
 
     @Transactional(readOnly = true)
     public List<Usuario> buscarTodos() {
         return usuarioRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username).orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Usuário com username " + username + " não encontrado"));
+    }
+
+    public Usuario.Role buscarRolePorUsername(String username) {
+        return usuarioRepository.findRoleByUsername(username);
     }
 }
