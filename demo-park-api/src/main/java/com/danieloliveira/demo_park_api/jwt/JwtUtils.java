@@ -22,7 +22,7 @@ public class JwtUtils {
     // essas váriaveis armazenam o tempo que o token vai levar para expirar
     public static long EXPIRES_DAYS = 0;
     public static long EXPIRES_HOURS = 0;
-    public static long EXPIRES_MINUTES = 2; // o token vai expirar em 2 minutos
+    public static long EXPIRES_MINUTES = 30; // o token vai expirar em 2 minutos
 
     private JwtUtils() {
     }
