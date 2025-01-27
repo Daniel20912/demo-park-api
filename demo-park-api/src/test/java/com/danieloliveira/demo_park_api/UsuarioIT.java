@@ -400,6 +400,7 @@ public class UsuarioIT {
     public void listarUsuarios_SemQualquerParametro_RetornarListaDeUsuariosCriadosRetornarStatus200() {
         List<UsuarioResponseDTO> responseBody = testClient.get()
                 .uri("/api/v1/usuarios")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .exchange().expectStatus().isOk()
                 .expectBodyList(UsuarioResponseDTO.class)
                 .returnResult().getResponseBody();
@@ -409,5 +410,20 @@ public class UsuarioIT {
         Assertions.assertThat(responseBody.size()).isEqualTo(3);
 
 
+    }
+
+    @Test
+    // teste usuário sem permissão tentando listar todos os usuários
+    public void listarUsuarios_SemQualquerParametro_RetornarErrorMessage403() {
+        ErrorMessage responseBody = testClient.get()
+                .uri("/api/v1/usuarios")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .exchange().expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 }
