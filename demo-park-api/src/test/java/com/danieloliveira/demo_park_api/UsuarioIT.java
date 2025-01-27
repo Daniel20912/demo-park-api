@@ -15,11 +15,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 
 // essa annotation indica que a classe será de testes
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // isso faz com que o tomcat seja executado em uma porta de maneira randomica
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+// isso faz com que o tomcat seja executado em uma porta de maneira randomica
 
 // essa annotation importa os scripts sql criados e diz quando eles devem ser excutados
-@Sql(scripts = "/sql/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD) // executa o script de insert antes de executar o teste
-@Sql(scripts = "/sql/usuarios/usuarios-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) // executa o script de delete após finalizar o teste
+@Sql(scripts = "/sql/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+// executa o script de insert antes de executar o teste
+@Sql(scripts = "/sql/usuarios/usuarios-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+// executa o script de delete após finalizar o teste
 public class UsuarioIT {
 
     @Autowired
@@ -64,7 +67,6 @@ public class UsuarioIT {
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
-
 
 
         // variação 2
@@ -165,8 +167,11 @@ public class UsuarioIT {
     @Test
     // teste busca de um usuário pelo id
     public void buscarUsuario_ComIdExistente_RetornarUsuarioComStatus200() {
+
+        // variação 1: admin buscando os próprios dados
         UsuarioResponseDTO responseBody = testClient.get()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
                 .expectBody(UsuarioResponseDTO.class)
                 .returnResult().getResponseBody();
@@ -177,14 +182,47 @@ public class UsuarioIT {
         Assertions.assertThat(responseBody.getUsername()).isEqualTo("ana@gmail.com");
         Assertions.assertThat(responseBody.getRole()).isEqualTo("ADMIN"); // como o response é um DTO ele só mostra o role como CLIENTE, não como ROLE_CLIENTE
 
+
+        // variação 2: admin busando um usuário do tipo cliente
+        responseBody = testClient.get()
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
+                .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
+                .expectBody(UsuarioResponseDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getId()).isEqualTo(101);
+        Assertions.assertThat(responseBody.getUsername()).isEqualTo("joao@gmail.com");
+        Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENTE"); // como o response é um DTO ele só mostra o role como CLIENTE, não como ROLE_CLIENTE
+
+
+        // variação 3: usuário do tipo cliente buscando os próprios dados dele
+        responseBody = testClient.get()
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
+                .expectBody(UsuarioResponseDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getId()).isEqualTo(101);
+        Assertions.assertThat(responseBody.getUsername()).isEqualTo("joao@gmail.com");
+        Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENTE"); // como o response é um DTO ele só mostra o role como CLIENTE, não como ROLE_CLIENTE
     }
 
 
     @Test
     // teste busca de um usuário pelo id que não existe
-    public void buscarUsuario_ComIdInexistente_RetornarUsuarioComStatus404() {
+    public void buscarUsuario_ComIdInexistente_RetornarErrorMessage404() {
+
+        // teste para o erro 404, quando é feita uma busca por um usuário que não existe
+        // o único que pode buscar por um usuário que não existe é o admin
         ErrorMessage responseBody = testClient.get()
                 .uri("/api/v1/usuarios/1234")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .exchange().expectStatus().isNotFound()
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
@@ -192,6 +230,24 @@ public class UsuarioIT {
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+
+    }
+
+    @Test
+    // teste busca de um cliente buscando outro cliente
+    public void buscarUsuario_ComUsuarioClienteBuscandoOutroCliente_RetornarErrorMessage403() {
+
+        // teste para o erro 403, quando um cliente busca por outro cliente que não seja ele
+        ErrorMessage responseBody = testClient.get()
+                .uri("/api/v1/usuarios/102")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .exchange().expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
 
     }
 
@@ -255,7 +311,6 @@ public class UsuarioIT {
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
-
 
 
         // variação 3
