@@ -2,6 +2,7 @@ package com.danieloliveira.demo_park_api;
 
 import com.danieloliveira.demo_park_api.jwt.JwtToken;
 import com.danieloliveira.demo_park_api.web.dto.UsuarioLoginDTO;
+import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class AutenticacaoIT {
 
 
     @Test
+    // testa a autenticação com credenciais válidas
     public void autenticar_ComCredenciaisValidas_RetornarToken_ComStatus200() {
         JwtToken responseBody = testClient
                 .post()
@@ -44,6 +46,44 @@ public class AutenticacaoIT {
 
         Assertions.assertThat(responseBody).isNotNull();
 
+    }
+
+
+    @Test
+    // testa a autenticação com credenciais inválidas
+    public void autenticar_ComCredenciaisInvalidas_RetornarErrorMessageComStatus200() {
+
+        // variação 1: com nome de usuário inválido
+        ErrorMessage responseBody = testClient
+                .post()
+                .uri("/api/v1/auth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioLoginDTO("inválido@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+
+
+        // variação 2: com senha inválida
+        responseBody = testClient
+                .post()
+                .uri("/api/v1/auth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioLoginDTO("ana@gmail.com", "000000"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
     }
 
 }
