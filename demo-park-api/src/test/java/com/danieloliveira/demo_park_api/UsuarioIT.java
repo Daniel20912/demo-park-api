@@ -315,6 +315,7 @@ public class UsuarioIT {
         // variação 1
         ErrorMessage responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("", "", ""))
                 .exchange().expectStatus().isEqualTo(422)
@@ -329,6 +330,7 @@ public class UsuarioIT {
         // variação 2
         responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("12345", "12345", "12345"))
                 .exchange().expectStatus().isEqualTo(422)
@@ -343,6 +345,7 @@ public class UsuarioIT {
         // variação 3
         responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("1234567", "1234567", "1234567"))
                 .exchange().expectStatus().isEqualTo(422)
@@ -362,6 +365,7 @@ public class UsuarioIT {
         // variação 1
         ErrorMessage responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("123456", "123456", "000000"))
                 .exchange().expectStatus().isEqualTo(400)
@@ -376,6 +380,7 @@ public class UsuarioIT {
         // variação 2
         responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("000000", "123456", "123456"))
                 .exchange().expectStatus().isEqualTo(400)
