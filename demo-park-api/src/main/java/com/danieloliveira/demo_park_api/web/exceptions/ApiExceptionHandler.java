@@ -1,5 +1,6 @@
 package com.danieloliveira.demo_park_api.web.exceptions;
 
+import com.danieloliveira.demo_park_api.exceptions.CpfUniqueViolationException;
 import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
 import com.danieloliveira.demo_park_api.exceptions.PasswordInvalidException;
 import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationException;
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class) // registra a excessão
+    // aceita tanto a exceção MethodArgumentNotValidException quanto a CpfUniqueViolationException
+    @ExceptionHandler({MethodArgumentNotValidException.class, CpfUniqueViolationException.class}) // registra a excessão
     public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
 
         log.error("Api Error - : ", e);
