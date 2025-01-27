@@ -15,8 +15,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 
 // essa annotation indica que a classe será de testes
+/*
+    RANDOM_PORT faz com que o tomcat seja executado em uma porta de maneira randomica,
+    pois às vezes vários testes serão esxecutados ao mesmo tempo, e não pode haver conflitos de portas
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-// isso faz com que o tomcat seja executado em uma porta de maneira randomica
 
 // essa annotation importa os scripts sql criados e diz quando eles devem ser excutados
 @Sql(scripts = "/sql/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
