@@ -171,7 +171,7 @@ public class UsuarioIT {
         // variação 1: admin buscando os próprios dados
         UsuarioResponseDTO responseBody = testClient.get()
                 .uri("/api/v1/usuarios/100")
-                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456")) // faz a autenticação
                 .exchange().expectStatus().isOk()// se chegar qualquer código que não seja um 200 será lançada uma exceção
                 .expectBody(UsuarioResponseDTO.class)
                 .returnResult().getResponseBody();
@@ -254,29 +254,56 @@ public class UsuarioIT {
     @Test
     // teste da alteração de senha
     public void editarSenha_ComDadosValidos_RetornarStatus204() {
+        // variação 1: admin alterando a própria senha
         testClient.patch()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
                 .exchange().expectStatus().isNoContent();
 
+
+        // variação 1: cliente alterando a própria senha
+        testClient.patch()
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
+                .exchange().expectStatus().isNoContent();
     }
 
 
     @Test
-    // teste busca de um usuário pelo id que não existe
-    public void editarSenha_ComIdInexistente_RetornarUsuarioComStatus404() {
+    // teste usuário alterando uma senha com que não seja dele
+    public void editarSenha_ComUsuariosDiferentes_RetornarErrorMessage403() {
+
+        // variação 1: admin tentando alterar uma senha de um id que não é o dele
         ErrorMessage responseBody = testClient.patch()
                 .uri("/api/v1/usuarios/1234")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
-                .exchange().expectStatus().isNotFound()
+                .exchange().expectStatus().isForbidden()
                 .expectBody(ErrorMessage.class)
                 .returnResult().getResponseBody();
 
 
         Assertions.assertThat(responseBody).isNotNull();
-        Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+
+        // variação 1: cliente tentando alterar uma senha de um id que não é o dele
+        responseBody = testClient.patch()
+                .uri("/api/v1/usuarios/1234")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDTO("123456", "000000", "000000"))
+                .exchange().expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
 
     }
 
