@@ -3,19 +3,23 @@ package com.danieloliveira.demo_park_api.web.controllers;
 
 import com.danieloliveira.demo_park_api.entities.Cliente;
 import com.danieloliveira.demo_park_api.jwt.JwtUserDetails;
+import com.danieloliveira.demo_park_api.repositories.projection.ClienteProjection;
 import com.danieloliveira.demo_park_api.sevices.ClienteService;
 import com.danieloliveira.demo_park_api.sevices.UsuarioService;
 import com.danieloliveira.demo_park_api.web.dto.ClienteCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.ClienteResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.PagebleDTO;
 import com.danieloliveira.demo_park_api.web.dto.mapper.ClienteMapper;
+import com.danieloliveira.demo_park_api.web.dto.mapper.PagebleMapper;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -53,7 +57,6 @@ public class ClienteController {
     }
 
 
-
     @Operation(summary = "Localizar um cliente", description = "Recurso para localizar um cliente por um id" + "Requisição exige um bearer token. Acesso Restrito a Role = 'ADMIN'", responses = {
             // como o código 204 é um noContente, o schema será um Void
             @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso",
@@ -68,5 +71,20 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDTO> getById(@PathVariable Long id) {
         Cliente cliente = clienteService.buscarPorId(id);
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+
+
+        /*
+        pageable serve para o processo de paginação
+        coniste em dividir um conjunto de dados em várias "páginas",
+        permitindo que o usuário ou o sistema recupere e exiba uma parte dos dados por vez,
+        em vez de carregar tudo de uma vez
+        não é u
+         */
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PagebleDTO> getAll(Pageable pageable) {
+        Page<ClienteProjection> clientes = clienteService.buscarTodos(pageable);
+        return ResponseEntity.ok(PagebleMapper.toDto(clientes));
     }
 }
