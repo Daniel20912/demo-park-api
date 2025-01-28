@@ -20,9 +20,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 
 // essa annotation importa os scripts sql criados e diz quando eles devem ser excutados
-@Sql(scripts = "/sql/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 // executa o script de insert antes de executar o teste
-@Sql(scripts = "/sql/usuarios/usuarios-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "/usuarios/usuarios-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 // executa o script de delete após finalizar o teste
 public class AutenticacaoIT {
 
@@ -51,14 +51,14 @@ public class AutenticacaoIT {
 
     @Test
     // testa a autenticação com credenciais inválidas
-    public void autenticar_ComCredenciaisInvalidas_RetornarErrorMessageComStatus200() {
+    public void autenticar_ComCredenciaisInvalidas_RetornarErrorMessageComStatus400() {
 
         // variação 1: com nome de usuário inválido
         ErrorMessage responseBody = testClient
                 .post()
                 .uri("/api/v1/auth")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UsuarioLoginDTO("inválido@gmail.com", "123456"))
+                .bodyValue(new UsuarioLoginDTO("invalido@gmail.com", "123456"))
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(ErrorMessage.class)

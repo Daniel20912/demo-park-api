@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/demo-park-api/src/test/resources/sql/usuarios/usuarios-delete.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/demo-park-api/src/test/resources/sql/usuarios/usuarios-insert.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/demo-park-api/src/test/sql/usuarios/usuarios-delete.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/demo-park-api/src/test/sql/usuarios/usuarios-insert.sql" dialect="GenericSQL" />
     <file url="PROJECT" dialect="GenericSQL" />
   </component>
 </project>

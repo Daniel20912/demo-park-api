@@ -21,6 +21,7 @@ public class JwtAuthentication {
                 .expectBody(JwtToken.class)
                 .returnResult().getResponseBody().getToken();
 
+
         return httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
     }
