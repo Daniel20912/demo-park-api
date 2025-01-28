@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionHandler {
 
     // aceita tanto a exceção MethodArgumentNotValidException quanto a CpfUniqueViolationException
-    @ExceptionHandler({MethodArgumentNotValidException.class, CpfUniqueViolationException.class}) // registra a excessão
+    @ExceptionHandler(MethodArgumentNotValidException.class) // registra a excessão
     public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
 
         log.error("Api Error - : ", e);
@@ -30,8 +30,8 @@ public class ApiExceptionHandler {
     }
 
 
-    @ExceptionHandler(UsernameUniqueViolationException.class) // registra a excessão
-    public ResponseEntity<ErrorMessage> usernameUniqueViolationException(UsernameUniqueViolationException e, HttpServletRequest request) {
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class}) // registra a excessão
+    public ResponseEntity<ErrorMessage> usernameUniqueViolationException(RuntimeException e, HttpServletRequest request) {
 
         log.error("Api Error - : ", e);
         return ResponseEntity.status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
