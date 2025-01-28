@@ -1,9 +1,6 @@
 package com.danieloliveira.demo_park_api.web.exceptions;
 
-import com.danieloliveira.demo_park_api.exceptions.CpfUniqueViolationException;
-import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
-import com.danieloliveira.demo_park_api.exceptions.PasswordInvalidException;
-import com.danieloliveira.demo_park_api.exceptions.UsernameUniqueViolationException;
+import com.danieloliveira.demo_park_api.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +27,7 @@ public class ApiExceptionHandler {
     }
 
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class}) // registra a excessão
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class, CodigoUniqueViolationException.class}) // registra a excessão
     public ResponseEntity<ErrorMessage> usernameUniqueViolationException(RuntimeException e, HttpServletRequest request) {
 
         log.error("Api Error - : ", e);
