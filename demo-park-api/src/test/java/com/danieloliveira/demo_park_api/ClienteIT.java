@@ -3,6 +3,7 @@ package com.danieloliveira.demo_park_api;
 
 import com.danieloliveira.demo_park_api.web.dto.ClienteCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.ClienteResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.PagebleDTO;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -202,5 +203,64 @@ public class ClienteIT {
 
         Assertions.assertThat(responseBody).isNotNull();
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+
+    @Test
+    // teste buscar todos os clientes pelo admin
+    public void BuscarClientes_ComPaginacaoPeloAdmin_RetornarClientesComStauts200 () {
+
+        // variação 1: sem parametros
+        PagebleDTO responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PagebleDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getContent()).size().isEqualTo(2);
+        Assertions.assertThat(responseBody.getNumber()).isEqualTo(0);
+        Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(1);
+
+
+
+        // variação 2: com parametros
+        responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes?size=1&page=1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PagebleDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getContent()).size().isEqualTo(1);
+        Assertions.assertThat(responseBody.getNumber()).isEqualTo(1);
+        Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(2);
+    }
+
+
+    @Test
+    // teste buscar todos os clientes pelo cliente
+    public void BuscarClientes_ComPaginacaoPeloCliente_RetornarErrorMessageComStauts403 () {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+
     }
 }
