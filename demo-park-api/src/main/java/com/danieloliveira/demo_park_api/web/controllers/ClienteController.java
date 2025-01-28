@@ -51,4 +51,11 @@ public class ClienteController {
         clienteService.salvar(cliente);
         return ResponseEntity.status(201).body(ClienteMapper.toDto(cliente));
     }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClienteResponseDTO> getById(@PathVariable Long id) {
+        Cliente cliente = clienteService.buscarPorId(id);
+        return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
 }
