@@ -30,7 +30,7 @@ public class Cliente implements Serializable {
 
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
-    @Column(name = "cpf", nullable = false, insertable = true, length = 11)
+    @Column(name = "cpf", nullable = false, unique = true, length = 11)
     private String cpf;
 
     @OneToOne
