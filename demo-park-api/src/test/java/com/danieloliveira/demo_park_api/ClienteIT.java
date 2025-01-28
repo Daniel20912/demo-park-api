@@ -263,4 +263,42 @@ public class ClienteIT {
         Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
 
     }
+
+
+    @Test
+    // teste para um cliente buscar detalhes dele
+    public void BuscarCliente_ComDadosDoTokenDeCliente_RetornarClienteComStauts200 () {
+        ClienteResponseDTO responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes/detalhes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ClienteResponseDTO.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getCpf()).isEqualTo("94234490008");
+        Assertions.assertThat(responseBody.getNome()).isEqualTo("João Silva");
+        Assertions.assertThat(responseBody.getId()).isEqualTo(10);
+    }
+
+
+    @Test
+    // teste para um admin buscar detalhes do cliente
+    public void BuscarCliente_ComDadosDoTokenDeAdmin_RetornarErrorMessageStauts403 () {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes/detalhes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+
+        Assertions.assertThat(responseBody).isNotNull();
+        Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
 }
