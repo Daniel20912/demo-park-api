@@ -10,11 +10,13 @@ import org.modelmapper.ModelMapper;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClienteVagaMapper {
 
-    private static ClienteVaga toClienteVaga(EstacionamentoCreateDTO dto) {
+    public static ClienteVaga toClienteVaga(EstacionamentoCreateDTO dto) {
         return new ModelMapper().map(dto, ClienteVaga.class);
     }
 
-    private static EstacionamentoResponseDTO toEstacionamentoCreateDTO(ClienteVaga vaga) {
+    public static EstacionamentoResponseDTO toDto(ClienteVaga vaga) {
         return new ModelMapper().map(vaga, EstacionamentoResponseDTO.class);
     }
+
+
 }
