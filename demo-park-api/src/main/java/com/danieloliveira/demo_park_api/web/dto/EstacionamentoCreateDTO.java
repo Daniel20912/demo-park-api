@@ -17,7 +17,7 @@ public class EstacionamentoCreateDTO {
 
     @NotBlank
     @Size(min = 8, max = 8)
-    @Pattern(regexp = "[A-Z]{3}[0-9]{4}", message = "A placa do veiculo deve seguir o padrão 'XXX-0000'")
+    @Pattern(regexp = "[A-Z]{3}-[0-9]{4}", message = "A placa do veiculo deve seguir o padrão 'XXX-0000'")
     private String placa;
 
     @NotBlank
