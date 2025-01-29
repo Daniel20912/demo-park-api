@@ -64,7 +64,7 @@ public class Vaga implements Serializable {
         return Objects.hashCode(id);
     }
 
-    public enum Vaga() {
+    public enum StatusVaga{
         LIVRE,
         OCUPADA
     }
