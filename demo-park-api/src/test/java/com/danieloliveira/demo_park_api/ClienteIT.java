@@ -3,7 +3,7 @@ package com.danieloliveira.demo_park_api;
 
 import com.danieloliveira.demo_park_api.web.dto.ClienteCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.ClienteResponseDTO;
-import com.danieloliveira.demo_park_api.web.dto.PagebleDTO;
+import com.danieloliveira.demo_park_api.web.dto.PageableDTO;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -211,13 +211,13 @@ public class ClienteIT {
     public void BuscarClientes_ComPaginacaoPeloAdmin_RetornarClientesComStauts200 () {
 
         // variação 1: sem parametros
-        PagebleDTO responseBody = testClient
+        PageableDTO responseBody = testClient
                 .get()
                 .uri("/api/v1/clientes")
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(PagebleDTO.class)
+                .expectBody(PageableDTO.class)
                 .returnResult().getResponseBody();
 
 
@@ -235,7 +235,7 @@ public class ClienteIT {
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@gmail.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(PagebleDTO.class)
+                .expectBody(PageableDTO.class)
                 .returnResult().getResponseBody();
 
 

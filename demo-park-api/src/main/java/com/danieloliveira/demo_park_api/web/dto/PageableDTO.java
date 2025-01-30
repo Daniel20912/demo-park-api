@@ -10,7 +10,7 @@ import java.util.List;
 // cria uma estrutura para representar uma página de dados paginados
 @Getter
 @Setter
-public class PagebleDTO {
+public class PageableDTO {
     boolean first;
     boolean last;
     private List content = new ArrayList<>();

@@ -8,7 +8,7 @@ import com.danieloliveira.demo_park_api.sevices.ClienteService;
 import com.danieloliveira.demo_park_api.sevices.UsuarioService;
 import com.danieloliveira.demo_park_api.web.dto.ClienteCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.ClienteResponseDTO;
-import com.danieloliveira.demo_park_api.web.dto.PagebleDTO;
+import com.danieloliveira.demo_park_api.web.dto.PageableDTO;
 import com.danieloliveira.demo_park_api.web.dto.mapper.ClienteMapper;
 import com.danieloliveira.demo_park_api.web.dto.mapper.PagebleMapper;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
@@ -122,7 +122,7 @@ public class ClienteController {
          */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PagebleDTO> getAll(@Parameter(hidden = true) @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable) { // sort = {"nome"} ordena os elementos pelos nomes
+    public ResponseEntity<PageableDTO> getAll(@Parameter(hidden = true) @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable) { // sort = {"nome"} ordena os elementos pelos nomes
         Page<ClienteProjection> clientes = clienteService.buscarTodos(pageable);
         return ResponseEntity.ok(PagebleMapper.toDto(clientes));
     }
