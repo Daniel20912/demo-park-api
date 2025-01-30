@@ -23,4 +23,8 @@ public class ClienteVagaService {
         // se a data de saída é nula signifaca que o o cliente ainda está estacionado
         return clienteVagaRepository.findByReciboAndDataSaidaIsNull(recibo).orElseThrow(() -> new EntityNotFoundException("Recibo " + recibo + " não encontrado no sistema ou check-out já realizado"));
     }
+
+    public long getTotalDeVezesEstacionamentoCompleto(String cpf) {
+        return clienteVagaRepository.countByClienteCpfAndDataSaidaIsNotNull(cpf)
+    }
 }
