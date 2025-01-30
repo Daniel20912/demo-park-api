@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.danieloliveira.demo_park_api.entities.Vaga.StatusVaga.LIVRE;
 import static com.danieloliveira.demo_park_api.entities.Vaga.StatusVaga.OCUPADA;
 
 @RequiredArgsConstructor
@@ -45,24 +44,21 @@ public class EstacionamentoService {
     }
 
     @Transactional
-    public ClienteVaga checkout(String recibo) {
+    public ClienteVaga checkOut(String recibo) {
         ClienteVaga clienteVaga = clienteVagaService.buscarPorRecibo(recibo);
 
         LocalDateTime dataSaida = LocalDateTime.now();
+
         BigDecimal valor = EstacionamentoUtil.calcularCusto(clienteVaga.getDataEntrada(), dataSaida);
         clienteVaga.setValor(valor);
 
         long totalDeVezes = clienteVagaService.getTotalDeVezesEstacionamentoCompleto(clienteVaga.getCliente().getCpf());
 
         BigDecimal desconto = EstacionamentoUtil.calcularDesconto(valor, totalDeVezes);
-
         clienteVaga.setDesconto(desconto);
 
         clienteVaga.setDataSaida(dataSaida);
-
-        clienteVaga.getVaga().setStatus(LIVRE);
-
-        clienteVagaService.salvar(clienteVaga);
+        clienteVaga.getVaga().setStatus(Vaga.StatusVaga.LIVRE);
 
         return clienteVagaService.salvar(clienteVaga);
     }
