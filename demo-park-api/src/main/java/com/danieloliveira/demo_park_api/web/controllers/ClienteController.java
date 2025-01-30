@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
+@Tag(name = "Clientes", description = "Contém todas as opereções relativas ao recurso de um cliente")
 @RestController
 @RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
