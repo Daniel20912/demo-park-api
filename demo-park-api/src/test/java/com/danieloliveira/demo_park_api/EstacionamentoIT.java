@@ -94,4 +94,53 @@ public class EstacionamentoIT {
                 .jsonPath("method").isEqualTo("POST");
     }
 
+
+    @Test
+    // teste de criação do check-in com um cpf válido, mas que não existe no banco de dados
+    public void criarCheckin_ComDadosInvalidos_RetornarErrorStatus404() {
+        EstacionamentoCreateDTO createDTO = EstacionamentoCreateDTO.builder()
+                .placa("WER-1111").marca("FIAT").modelo("PALIO 1.0")
+                .cor("AZUL").clienteCpf("34798721077")
+                .build();
+
+        testClient
+                .post()
+                .uri("/api/v1/estacionamentos/check-in")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com.br", "123456"))
+                .bodyValue(createDTO)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("status").isEqualTo(404)
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-in")
+                .jsonPath("method").isEqualTo("POST");
+    }
+
+
+
+    @Sql(scripts = "/estacionamentos/estacionamento-insert-vagas-ocupadas.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/estacionamentos/estacionamento-delete-vagas-ocupadas.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    // teste de criação do check-in com nenhuma vaga livre
+    public void criarCheckin_ComVagasOcupadas_RetornarErrorStatus404() {
+        EstacionamentoCreateDTO createDTO = EstacionamentoCreateDTO.builder()
+                .placa("WER-1111").marca("FIAT").modelo("PALIO 1.0")
+                .cor("AZUL").clienteCpf("09191773016")
+                .build();
+
+        testClient
+                .post()
+                .uri("/api/v1/estacionamentos/check-in")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com.br", "123456"))
+                .bodyValue(createDTO)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("status").isEqualTo(404)
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-in")
+                .jsonPath("method").isEqualTo("POST");
+    }
+
 }
