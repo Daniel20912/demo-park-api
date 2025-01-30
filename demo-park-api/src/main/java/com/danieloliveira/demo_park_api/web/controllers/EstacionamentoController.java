@@ -1,11 +1,14 @@
 package com.danieloliveira.demo_park_api.web.controllers;
 
 import com.danieloliveira.demo_park_api.entities.ClienteVaga;
+import com.danieloliveira.demo_park_api.repositories.projection.ClienteVagaProjection;
 import com.danieloliveira.demo_park_api.sevices.ClienteVagaService;
 import com.danieloliveira.demo_park_api.sevices.EstacionamentoService;
 import com.danieloliveira.demo_park_api.web.dto.EstacionamentoCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.EstacionamentoResponseDTO;
+import com.danieloliveira.demo_park_api.web.dto.PagebleDTO;
 import com.danieloliveira.demo_park_api.web.dto.mapper.ClienteVagaMapper;
+import com.danieloliveira.demo_park_api.web.dto.mapper.PagebleMapper;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +20,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -102,7 +109,7 @@ public class EstacionamentoController {
     @Operation(summary = "Operação de check-out", description = "Recurso para dar saída de um veículo do estacionamento. " +
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
             security = @SecurityRequirement(name = "security"),
-            parameters = { @Parameter(in = PATH, name = "recibo", description = "Número do rebibo gerado pelo check-in",
+            parameters = {@Parameter(in = PATH, name = "recibo", description = "Número do rebibo gerado pelo check-in",
                     required = true)
             },
             responses = {
@@ -122,6 +129,16 @@ public class EstacionamentoController {
     public ResponseEntity<EstacionamentoResponseDTO> checkout(@PathVariable String recibo) {
         ClienteVaga clienteVaga = estacionamentoService.checkOut(recibo);
         EstacionamentoResponseDTO dto = ClienteVagaMapper.toDto(clienteVaga);
+        return ResponseEntity.ok(dto);
+    }
+
+
+    @GetMapping("/cpf/{cpf}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PagebleDTO> getAllEstacionamentoPorCpf(@PathVariable String cpf, @PageableDefault(size = 5, sort = "dataEntrada", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<ClienteVagaProjection> projection = clienteVagaService.buscarTodosPorClienteCpf(cpf, pageable);
+
+        PagebleDTO dto = PagebleMapper.toDto(projection);
         return ResponseEntity.ok(dto);
     }
 

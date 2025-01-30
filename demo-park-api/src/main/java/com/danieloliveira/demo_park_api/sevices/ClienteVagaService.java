@@ -3,7 +3,10 @@ package com.danieloliveira.demo_park_api.sevices;
 import com.danieloliveira.demo_park_api.entities.ClienteVaga;
 import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
 import com.danieloliveira.demo_park_api.repositories.ClienteVagaRepository;
+import com.danieloliveira.demo_park_api.repositories.projection.ClienteVagaProjection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,5 +30,9 @@ public class ClienteVagaService {
     @Transactional(readOnly = true)
     public long getTotalDeVezesEstacionamentoCompleto(String cpf) {
         return clienteVagaRepository.countByClienteCpfAndDataSaidaIsNotNull(cpf);
+    }
+
+    public Page<ClienteVagaProjection> buscarTodosPorClienteCpf(String cpf, Pageable pageable) {
+        return clienteVagaRepository.findAllByClienteCpf(cpf, pageable);
     }
 }
