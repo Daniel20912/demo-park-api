@@ -22,6 +22,7 @@ public class EstacionamentoIT {
     WebTestClient testClient;
 
     @Test
+    // teste de criação do check-in com os dados válidos
     public void criarCheckin_ComDadosValidos_RetornarCreatedAndLocation() {
         EstacionamentoCreateDTO createDTO = EstacionamentoCreateDTO.builder()
                 .placa("WER-1111").marca("FIAT").modelo("PALIO 1.0")
@@ -46,7 +47,51 @@ public class EstacionamentoIT {
                 .jsonPath("recibo").exists()
                 .jsonPath("dataEntrada").exists()
                 .jsonPath("vagaCodigo").exists();
-
-
     }
+
+    @Test
+    // teste de criação do check-in pelo cliente
+    public void criarCheckin_ComRoleCliente_RetornarErrorStatus403() {
+        EstacionamentoCreateDTO createDTO = EstacionamentoCreateDTO.builder()
+                .placa("WER-1111").marca("FIAT").modelo("PALIO 1.0")
+                .cor("AZUL").clienteCpf("09191773016")
+                .build();
+
+        testClient
+                .post()
+                .uri("/api/v1/estacionamentos/check-in")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com.br", "123456"))
+                .bodyValue(createDTO)
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("status").isEqualTo(403)
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-in")
+                .jsonPath("method").isEqualTo("POST");
+    }
+
+
+    @Test
+    // teste de criação do check-in com os dados inválidos
+    public void criarCheckin_ComDadosInvalidos_RetornarErrorStatus422() {
+        EstacionamentoCreateDTO createDTO = EstacionamentoCreateDTO.builder()
+                .placa("").marca("").modelo("")
+                .cor("").clienteCpf("")
+                .build();
+
+        testClient
+                .post()
+                .uri("/api/v1/estacionamentos/check-in")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com.br", "123456"))
+                .bodyValue(createDTO)
+                .exchange()
+                .expectStatus().isEqualTo(422)
+                .expectBody()
+                .jsonPath("status").isEqualTo(422)
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-in")
+                .jsonPath("method").isEqualTo("POST");
+    }
+
 }
