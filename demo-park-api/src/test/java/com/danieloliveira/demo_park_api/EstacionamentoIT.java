@@ -2,8 +2,16 @@ package com.danieloliveira.demo_park_api;
 
 
 import com.danieloliveira.demo_park_api.web.dto.EstacionamentoCreateDTO;
+import com.danieloliveira.demo_park_api.web.dto.EstacionamentoResponseDTO;
 import com.danieloliveira.demo_park_api.web.dto.PageableDTO;
-import org.assertj.core.api.Assertions;
+import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -291,6 +301,8 @@ public class EstacionamentoIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getSize()).isEqualTo(1);
     }
 
+
+
     @Test
     // teste de buscar um estacionamento pelo cpf usando o perfil de cliente
     public void buscarEstacionamentos_PorClienteCpfComPerfilCliente_RetornarErrorStatus403() {
@@ -303,6 +315,58 @@ public class EstacionamentoIT {
                 .expectBody()
                 .jsonPath("status").isEqualTo("403")
                 .jsonPath("path").isEqualTo("/api/v1/estacionamentos/cpf/98401203015")
+                .jsonPath("method").isEqualTo("GET");
+    }
+
+
+    @Test
+    // teste de buscar estacionamentos usando o perfil de cliente
+    public void buscarEstacionamentos_DoClienteLogado_RetornarSucesso() {
+
+        // para a pagina 1
+        PageableDTO responseBody = testClient.get()
+                .uri("/api/v1/estacionamentos")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com.br", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDTO.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent().size()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(2);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(0);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getSize()).isEqualTo(1);
+
+        // para a pagina 2
+        responseBody = testClient.get()
+                .uri("/api/v1/estacionamentos")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com.br", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDTO.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent().size()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(2);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getSize()).isEqualTo(1);
+    }
+
+
+    @Test
+    // teste de buscar um estacionamento do cliente logado usando o perfil de admin
+    public void buscarEstacionamentos_DoClienteLogadoComPerfilAdmin_RetornarErrorStatus403() {
+
+        testClient.get()
+                .uri("/api/v1/estacionamentos")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com.br", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("status").isEqualTo("403")
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos")
                 .jsonPath("method").isEqualTo("GET");
     }
 }
