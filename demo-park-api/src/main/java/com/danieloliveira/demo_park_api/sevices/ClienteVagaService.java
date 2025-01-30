@@ -32,7 +32,13 @@ public class ClienteVagaService {
         return clienteVagaRepository.countByClienteCpfAndDataSaidaIsNotNull(cpf);
     }
 
+    @Transactional(readOnly = true)
     public Page<ClienteVagaProjection> buscarTodosPorClienteCpf(String cpf, Pageable pageable) {
         return clienteVagaRepository.findAllByClienteCpf(cpf, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ClienteVagaProjection> buscarTodosPorUsuarioId(Long id, Pageable pageable) {
+        return clienteVagaRepository.findAllByClienteUsuario(id, pageable);
     }
 }

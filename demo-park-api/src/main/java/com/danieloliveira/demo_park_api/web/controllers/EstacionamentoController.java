@@ -1,6 +1,7 @@
 package com.danieloliveira.demo_park_api.web.controllers;
 
 import com.danieloliveira.demo_park_api.entities.ClienteVaga;
+import com.danieloliveira.demo_park_api.jwt.JwtUserDetails;
 import com.danieloliveira.demo_park_api.repositories.projection.ClienteVagaProjection;
 import com.danieloliveira.demo_park_api.sevices.ClienteVagaService;
 import com.danieloliveira.demo_park_api.sevices.EstacionamentoService;
@@ -28,6 +29,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -165,6 +167,15 @@ public class EstacionamentoController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PageableDTO> getAllEstacionamentoPorCpf(@PathVariable String cpf, @PageableDefault(size = 5, sort = "dataEntrada", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<ClienteVagaProjection> projection = clienteVagaService.buscarTodosPorClienteCpf(cpf, pageable);
+
+        PageableDTO dto = PagebleMapper.toDto(projection);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<PageableDTO> getAllEstacionamentosDoCliente(@AuthenticationPrincipal JwtUserDetails user, @PageableDefault(size = 5, sort = "dataEntrada", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<ClienteVagaProjection> projection = clienteVagaService.buscarTodosPorUsuarioId(user.getId(), pageable);
 
         PageableDTO dto = PagebleMapper.toDto(projection);
         return ResponseEntity.ok(dto);
