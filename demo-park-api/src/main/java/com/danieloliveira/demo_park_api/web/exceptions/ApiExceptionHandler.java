@@ -57,5 +57,13 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.FORBIDDEN, e.getMessage()));
     }
 
+    @ExceptionHandler(Exception.class) // registra a excessão
+    public ResponseEntity<ErrorMessage> innternalServerErrorexception(Exception e, HttpServletRequest request) {
+        ErrorMessage error = new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+
+        log.error("Internal Server Error {} {} ", error, e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(error);
+    }
+
 
 }
