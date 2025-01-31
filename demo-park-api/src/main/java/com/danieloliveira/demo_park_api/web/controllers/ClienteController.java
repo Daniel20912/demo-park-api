@@ -10,7 +10,7 @@ import com.danieloliveira.demo_park_api.web.dto.ClienteCreateDTO;
 import com.danieloliveira.demo_park_api.web.dto.ClienteResponseDTO;
 import com.danieloliveira.demo_park_api.web.dto.PageableDTO;
 import com.danieloliveira.demo_park_api.web.dto.mapper.ClienteMapper;
-import com.danieloliveira.demo_park_api.web.dto.mapper.PagebleMapper;
+import com.danieloliveira.demo_park_api.web.dto.mapper.PageableMapper;
 import com.danieloliveira.demo_park_api.web.exceptions.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -124,7 +124,7 @@ public class ClienteController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PageableDTO> getAll(@Parameter(hidden = true) @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable) { // sort = {"nome"} ordena os elementos pelos nomes
         Page<ClienteProjection> clientes = clienteService.buscarTodos(pageable);
-        return ResponseEntity.ok(PagebleMapper.toDto(clientes));
+        return ResponseEntity.ok(PageableMapper.toDto(clientes));
     }
 
 
