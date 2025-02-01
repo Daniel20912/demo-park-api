@@ -33,9 +33,9 @@ public class ApiExceptionHandler {
     }
 
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class, CodigoUniqueViolationException.class})
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
     // registra a excessão
-    public ResponseEntity<ErrorMessage> usernameUniqueViolationException(RuntimeException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> uniqueViolationException(RuntimeException e, HttpServletRequest request) {
 
         log.error("Api Error - : ", e);
         return ResponseEntity.status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
@@ -43,9 +43,9 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException e, HttpServletRequest request) {
+        String message = messageSource.getMessage("exception.entityNotFoundException", new Object[]{e.getRecurso(), e.getCodigo()}, request.getLocale());
 
-        log.error("Api Error - : ", e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.NOT_FOUND, message));
     }
 
     @ExceptionHandler(PasswordInvalidException.class) // registra a excessão
@@ -70,6 +70,23 @@ public class ApiExceptionHandler {
 
         log.error("Internal Server Error {} {} ", error, e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(error);
+    }
+
+
+    @ExceptionHandler(CodigoUniqueViolationException.class)
+    // registra a excessão
+    public ResponseEntity<ErrorMessage> uniqueViolationException(CodigoUniqueViolationException e, HttpServletRequest request) {
+
+        String message = messageSource.getMessage("exception.codigoUniqueViolationException", new Object[]{e.getRecurso(), e.getCodigo()}, request.getLocale());
+        return ResponseEntity.status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.CONFLICT, message));
+    }
+
+
+    @ExceptionHandler(VagaDisponivelException.class)
+    public ResponseEntity<ErrorMessage> vagaDisponivelException(RuntimeException e, HttpServletRequest request) {
+
+        log.error("Api Error - : ", e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
 

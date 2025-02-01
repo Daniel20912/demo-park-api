@@ -3,6 +3,7 @@ package com.danieloliveira.demo_park_api.sevices;
 import com.danieloliveira.demo_park_api.entities.Vaga;
 import com.danieloliveira.demo_park_api.exceptions.CodigoUniqueViolationException;
 import com.danieloliveira.demo_park_api.exceptions.EntityNotFoundException;
+import com.danieloliveira.demo_park_api.exceptions.VagaDisponivelException;
 import com.danieloliveira.demo_park_api.repositories.VagaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,19 +23,19 @@ public class VagaService {
         try {
             return vagaRepository.save(vaga);
         } catch (DataIntegrityViolationException e) {
-            throw new CodigoUniqueViolationException(String.format("Vaga com codigo %s já cadastrada", vaga.getCodigo()));
+            throw new CodigoUniqueViolationException("Vaga", vaga.getCodigo());
         }
     }
 
     @Transactional(readOnly = true)
     public Vaga buscarPorCodigo(String codigo) {
         return vagaRepository.findByCodigo(codigo).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Vaga com código '%s' não foi encotrada", codigo))
+                () -> new EntityNotFoundException("Vaga", codigo)
         );
     }
 
     @Transactional(readOnly = true)
     public Vaga buscarPorVagaLivre() {
-        return vagaRepository.findFirstByStatus(LIVRE).orElseThrow(() -> new EntityNotFoundException("Nenhuma vaga livre for encontrada"));
+        return vagaRepository.findFirstByStatus(LIVRE).orElseThrow(() -> new VagaDisponivelException("Nenhuma vaga livre for encontrada"));
     }
 }
