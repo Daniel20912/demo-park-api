@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Getter
@@ -54,6 +57,24 @@ public class ErrorMessage {
         this.message = mensagem;
         addErrors(result);
 
+    }
+
+    public ErrorMessage(HttpServletRequest request, HttpStatus status, String mensagem, BindingResult result, MessageSource messageSource) {
+        this.path = request.getRequestURI();
+        this.method = request.getMethod();
+        this.status = status.value();
+        this.statusText = status.getReasonPhrase();
+        this.message = mensagem;
+        addErrors(result, messageSource, request.getLocale());
+    }
+
+    private void addErrors(BindingResult result, MessageSource messageSource, Locale locale) {
+        this.errors = new HashMap<>();
+        for (FieldError error : result.getFieldErrors()) {
+            String code = Objects.requireNonNull(error.getCodes())[0];
+            String message = messageSource.getMessage(code, error.getArguments(), locale);
+            this.errors.put(error.getField(), message);
+        }
     }
 
     private void addErrors(BindingResult result) {
